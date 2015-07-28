@@ -1,0 +1,22 @@
+---
+- hosts: all
+  sudo: yes
+  remote_user: vagrant
+  vars:
+    username: newuser
+    user: www-data
+    worker_process_num: 1
+    error_log_path: /var/log/nginx/error.log
+  tasks:
+    - name: ユーザーを追加
+      user: name={{ username }} group=vagrant shell=/bin/bash
+    - name: 時刻確認シェルを実行する
+      script: scripts/check_date.sh
+    - name: 時刻確認をベタ書きで実行する
+      shell: date >> /tmp/my_direct_date.log
+    - name: ホームディレクトリに空ファイルを作成する
+      file: path=/home/vagrant/kakakakakku.conf state=touch
+    - name: nginx をインストールする
+      yum: name=nginx state=latest
+    - name: nginx.conf を設定します
+      template: src=template.j2 dest=/etc/nginx/nginx.conf
