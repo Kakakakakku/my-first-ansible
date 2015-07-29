@@ -10,13 +10,24 @@
   tasks:
     - name: ユーザーを追加
       user: name={{ username }} group=vagrant shell=/bin/bash
+
     - name: 時刻確認シェルを実行する
       script: scripts/check_date.sh
+
     - name: 時刻確認をベタ書きで実行する
       shell: date >> /tmp/my_direct_date.log
+
     - name: ホームディレクトリに空ファイルを作成する
       file: path=/home/vagrant/kakakakakku.conf state=touch
-    - name: nginx をインストールする
-      yum: name=nginx state=latest
+
     - name: nginx.conf を設定します
       template: src=template.j2 dest=/etc/nginx/nginx.conf
+
+    # `with_items` でループを表現できる
+    - name: パッケージをインストールする
+      yum: name={{ item }} state=latest
+      with_items:
+        - git
+        - nginx
+        - wget
+        - vim
